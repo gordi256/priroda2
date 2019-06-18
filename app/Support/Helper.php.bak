@@ -1,0 +1,236 @@
+<?php
+namespace App\Support;
+use Illuminate\Support\Facades\Input;
+
+use DB;
+use App\News;
+
+
+ class Helper  {
+
+
+public static function pluralForm($n, $form1, $form2, $form5) {
+	  $n = abs($n) % 100;
+	  $n1 = $n % 10;
+	  if ($n > 10 && $n < 20) return $form5;
+	  if ($n1 > 1 && $n1 < 5) return $form2;
+	  if ($n1 == 1) return $form1;
+	  return $form5;
+	 }
+// public static function get_file_mime_type ($file) { 
+// $file_mime_type = 0;
+
+// return $this->mime_type();
+// }
+public static function mime_type ($mime_type) {
+
+  $icon_classes = array(
+    // Media
+    'image' => 'fa-file-image-o',
+    'audio' => 'fa-file-audio-o',
+    'video' => 'fa-file-video-o',
+    // Documents
+    'application/pdf' => 'fa-file-pdf-o',
+    'application/msword' => 'fa-file-word-o',
+    'application/vnd.ms-word' => 'fa-file-word-o',
+    'application/vnd.oasis.opendocument.text' => 'fa-file-word-o',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml' => 'fa-file-word-o',
+    'application/vnd.ms-excel' => 'fa-file-excel-o',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml' => 'fa-file-excel-o',
+    'application/vnd.oasis.opendocument.spreadsheet' => 'fa-file-excel-o',
+    'application/vnd.ms-powerpoint' => 'fa-file-powerpoint-o',
+    'application/vnd.openxmlformats-officedocument.presentationml' => 'fa-file-powerpoint-o',
+    'application/vnd.oasis.opendocument.presentation' => 'fa-file-powerpoint-o',
+    'text/plain' => 'fa-file-text-o',
+    'text/html' => 'fa-file-code-o',
+    'application/json' => 'fa-file-code-o',
+    // Archives
+    'application/gzip' => 'fa-file-archive-o',
+    'application/zip' => 'fa-file-archive-o',
+  );
+  foreach ($icon_classes as $text => $icon) {
+    if (strpos($mime_type, $text) === 0) {
+      return $icon;
+    }
+  }
+  return 'fa-file-o';
+
+  }
+	 public static function   find_guid($guid )    {
+		$res = "Объект не найден";
+
+		$res2 =\App\Category::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+		//dd($res2);
+		if (!null == $res2) {return "Категории " .$res2->name;}
+//		$res2 =\App\Product::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+//		if (!null == $res2) {return "Товара " .$res2->name;}
+		$res2 =\App\News::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+		if (!null == $res2) {return "Новости " .$res2->name;}
+//		$res2 =\App\Action::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+//		if (!null == $res2) {return "Акции " .$res2->name;}
+//		$res2 =\App\Order::where('guid' ,$guid  )->get(array('id' ,'guid'))->first();
+//		if (!null == $res2) {return "Заказа " .$res2->id ;}
+		$res2 =\App\Pages::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+		if (!null == $res2) {return "Страницы " .$res2->name ;}
+//		$res2 =\App\Slider::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+//		if (!null == $res2) {return "Слайда " .$res2->name ;}
+//		$res2 =\App\Texts::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+//		if (!null == $res2) {return "Статьи " .$res2->name ;}
+//		$res2 =\App\Uslugi::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+//		if (!null == $res2) {return "Услуги " .$res2->name ;}
+//		$res2 =\App\Vendor::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+//		if (!null == $res2) {return "Производителя " .$res2->name ;}
+		// dd($res2);
+
+		return $res;
+		}
+	 
+
+
+
+
+
+
+
+
+
+
+	 public static function   find_media_guid($guid )    {
+		$result = collect(); ;
+		$res =\App\News::where('guid' ,$guid  )->get(array('id', 'name' ,'guid'))->first();
+
+ 		if (!null == $res) {
+
+$result->model_name="Новости";
+$result->model="App\News";
+$result->id=$res->id;
+$result->name=$res->name;
+$result->guid=$res->guid;
+		 
+			
+			}
+  
+		return $result;
+		}
+
+
+
+
+
+
+
+/**
+ * Возвращает сумму прописью
+ * @author runcore
+ * @uses morph(...)
+ */
+ public static  function num2str($num) {
+	$nul='ноль';
+	$ten=array(
+		array('','один','два','три','четыре','пять','шесть','семь', 'восемь','девять'),
+		array('','одна','две','три','четыре','пять','шесть','семь', 'восемь','девять'),
+	);
+	$a20=array('десять','одиннадцать','двенадцать','тринадцать','четырнадцать' ,'пятнадцать','шестнадцать','семнадцать','восемнадцать','девятнадцать');
+	$tens=array(2=>'двадцать','тридцать','сорок','пятьдесят','шестьдесят','семьдесят' ,'восемьдесят','девяносто');
+	$hundred=array('','сто','двести','триста','четыреста','пятьсот','шестьсот', 'семьсот','восемьсот','девятьсот');
+	$unit=array( // Units
+		array('копейка' ,'копейки' ,'копеек',	 1),
+		array('рубль'   ,'рубля'   ,'рублей'    ,0),
+		array('тысяча'  ,'тысячи'  ,'тысяч'     ,1),
+		array('миллион' ,'миллиона','миллионов' ,0),
+		array('миллиард','милиарда','миллиардов',0),
+	);
+	//
+	list($rub,$kop) = explode('.',sprintf("%015.2f", floatval($num)));
+	$out = array();
+	if (intval($rub)>0) {
+		foreach(str_split($rub,3) as $uk=>$v) { // by 3 symbols
+			if (!intval($v)) continue;
+			$uk = sizeof($unit)-$uk-1; // unit key
+			$gender = $unit[$uk][3];
+			list($i1,$i2,$i3) = array_map('intval',str_split($v,1));
+			// mega-logic
+			$out[] = $hundred[$i1]; # 1xx-9xx
+			if ($i2>1) $out[]= $tens[$i2].' '.$ten[$gender][$i3]; # 20-99
+			else $out[]= $i2>0 ? $a20[$i3] : $ten[$gender][$i3]; # 10-19 | 1-9
+			// units without rub & kop
+			if ($uk>1) $out[]= Helpers::morph($v,$unit[$uk][0],$unit[$uk][1],$unit[$uk][2]);
+		} //foreach
+	}
+	else $out[] = $nul;
+	$out[] = Helpers::morph(intval($rub), $unit[1][0],$unit[1][1],$unit[1][2]); // rub
+	$out[] = $kop.' '.Helpers::morph($kop,$unit[0][0],$unit[0][1],$unit[0][2]); // kop
+	return trim(preg_replace('/ {2,}/', ' ', join(' ',$out)));
+}
+
+/**
+ * Склоняем словоформу
+ * @ author runcore
+ */
+ public static   function morph($n, $f1, $f2, $f5) {
+	$n = abs(intval($n)) % 100;
+	if ($n>10 && $n<20) return $f5;
+	$n = $n % 10;
+	if ($n>1 && $n<5) return $f2;
+	if ($n==1) return $f1;
+	return $f5;
+}
+
+public static function getTagslist(){
+ $tags_list= App\News::PopularTags (10);
+
+
+return $res;
+}
+
+ public static function getmonthslist()
+    {
+$_monthsList = array(
+  "1" => "Январь",
+  "2" => "Февраль",
+  "3" => "Март",
+  "4" => "Апрель",
+  "5" => "Май",
+  "6" => "Июнь",
+  "7" => "Июль",
+  "8" => "Август",
+  "9" => "Сентябрь",
+  "10" => "Октябрь",
+  "11" => "Ноябрь",
+  "12" => "Декабрь"
+);
+
+
+$res= News::select(DB::raw("MONTH(created_at) as month, YEAR(created_at) as year"))->groupBy(DB::raw("MONTH(created_at), YEAR(created_at)"))->distinct()->orderBy('year', 'desc')->orderBy('month', 'desc')->get();
+foreach ($res as $result ) {
+
+	$result->month_string = str_replace($result->month, " ".$_monthsList[$result->month] , $result->month);
+	$result->counter = News::whereMonth('created_at', $result->month)->whereYear('created_at', $result->year)->count()  ;
+}
+return $res;
+}
+
+  public static function stripXSS()
+    {
+        $sanitized = static::cleanArray(Input::get());
+        Input::merge($sanitized);
+    }
+    public static function cleanArray($array)
+    {
+        $result = array();
+        foreach ($array as $key => $value) {
+            $key = strip_tags($key);
+            if (is_array($value)) {
+                $result[$key] = static::cleanArray($value);
+            } else {
+                $result[$key] = trim(strip_tags($value)); // Remove trim() if you want to.
+            }
+       }
+       return $result;
+    }
+
+
+
+}
+
+ 
